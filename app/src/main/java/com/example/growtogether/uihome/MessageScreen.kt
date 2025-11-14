@@ -35,19 +35,29 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.runtime.*
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.foundation.clickable
 
 @Composable
-fun messageScreen(friendName: String) {
+fun messageScreen(friendName: String, onBack: () -> Unit) {
     var messageText by remember { mutableStateOf("") }
 
+
     Column(modifier = Modifier.fillMaxSize()) {
-//        Image(
-//            painter = painterResource(id = R.drawable.flower2),
-//            contentDescription = "Plant Image",
-//            modifier = Modifier
-//                .fillMaxWidth()
-//                .height(150.dp) // adjust as needed
-//        )
+
+        Row(
+            Modifier
+                .fillMaxWidth()
+                .padding(8.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = "✕",
+                style = MaterialTheme.typography.headlineMedium,
+                modifier = Modifier
+                    .padding(8.dp)
+                    .clickable { onBack() }     // ← GO BACK
+            )
+        }
         AnimatedFlower()
         // Header
         Text(

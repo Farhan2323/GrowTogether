@@ -68,7 +68,7 @@ fun GrowTogetherApp() {
                 .fillMaxSize()
         ) {
             if (activeFriendChat != null) {
-                messageScreen(friendName = activeFriendChat!!)
+                messageScreen(friendName = activeFriendChat!!, onBack = { activeFriendChat = null })
                 return@Box
             }
 
