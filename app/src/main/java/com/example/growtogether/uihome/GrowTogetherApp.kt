@@ -24,25 +24,38 @@ enum class BottomTab {
 @Composable
 fun GrowTogetherApp() {
     var selectedTab by remember { mutableStateOf(BottomTab.HOME) }
-
+    var activeFriendChat by remember { mutableStateOf<String?>(null) }
     Scaffold(
         bottomBar = {
             NavigationBar {
                 NavigationBarItem(
                     selected = selectedTab == BottomTab.HOME,
-                    onClick = { selectedTab = BottomTab.HOME },
+//                    onClick = { selectedTab = BottomTab.HOME },
+                    onClick = {
+                        activeFriendChat = null
+                        selectedTab = BottomTab.HOME
+                    },
                     icon = { Text("🏠") },
                     label = { Text("Home") }
                 )
                 NavigationBarItem(
                     selected = selectedTab == BottomTab.GARDEN,
-                    onClick = { selectedTab = BottomTab.GARDEN },
+//                    onClick = { selectedTab = BottomTab.GARDEN },
+                    onClick = {
+                        activeFriendChat = null
+                        selectedTab = BottomTab.GARDEN
+                    },
                     icon = { Text("🌿") },
                     label = { Text("Garden") }
                 )
                 NavigationBarItem(
                     selected = selectedTab == BottomTab.PROGRESS,
-                    onClick = { selectedTab = BottomTab.PROGRESS },
+
+//                    onClick = { selectedTab = BottomTab.PROGRESS },
+                    onClick = {
+                        activeFriendChat = null
+                        selectedTab = BottomTab.PROGRESS
+                    },
                     icon = { Text("📈") },
                     label = { Text("Progress") }
                 )
@@ -54,9 +67,19 @@ fun GrowTogetherApp() {
                 .padding(innerPadding)
                 .fillMaxSize()
         ) {
+            if (activeFriendChat != null) {
+                messageScreen(friendName = activeFriendChat!!)
+                return@Box
+            }
+
             when (selectedTab) {
                 BottomTab.HOME -> HomeScreen()
-                BottomTab.GARDEN -> GardenScreen()
+//                BottomTab.GARDEN -> GardenScreen()
+                BottomTab.GARDEN -> GardenScreen(
+                    onFriendClick = { friendName: String ->
+                        activeFriendChat = friendName
+                    }
+                )
                 BottomTab.PROGRESS -> ProgressScreen()
             }
         }
