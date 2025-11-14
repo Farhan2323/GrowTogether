@@ -1,17 +1,23 @@
 package com.example.growtogether.uihome
 
-import androidx.compose.runtime.Composable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Button
+import androidx.compose.material.DismissDirection
+import androidx.compose.material.DismissValue
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.SwipeToDismiss
+import androidx.compose.material.rememberDismissState
 import androidx.compose.material3.Card
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Divider
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Text
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.runtime.*
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -23,6 +29,7 @@ data class Task(
     val done: Boolean = false
 )
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun HomeScreen() {
     var tasks by remember {
@@ -36,13 +43,13 @@ fun HomeScreen() {
     }
 
     val completedCount = tasks.count { it.done }
-    var newTaskText by remember { mutableStateOf("") }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp)
     ) {
+
         Text(
             text = "Grow Together",
             style = MaterialTheme.typography.headlineSmall
@@ -55,50 +62,68 @@ fun HomeScreen() {
 
         Spacer(Modifier.height(16.dp))
         Divider()
-        Spacer(Modifier.height(8.dp))
-
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            OutlinedTextField(
-                value = newTaskText,
-                onValueChange = { newTaskText = it },
-                placeholder = { Text("Add a new task") },
-                modifier = Modifier.weight(1f)
-            )
-            Spacer(Modifier.width(8.dp))
-            Button(
-                onClick = {
-                    if (newTaskText.isNotBlank()) {
-                        tasks = tasks + Task(title = newTaskText.trim())
-                        newTaskText = ""
-                    }
-                }
-            ) {
-                Text("Add")
-            }
-        }
-
         Spacer(Modifier.height(12.dp))
 
         Text(
-            text = "Today's Tasks",
+            text = "Today's Tasks (swipe left to delete)",
             style = MaterialTheme.typography.titleMedium
         )
         Spacer(Modifier.height(8.dp))
 
-        LazyColumn(modifier = Modifier.fillMaxSize()) {
-            items(tasks, key = { it.id }) { task ->
-                TaskRow(
-                    task = task,
-                    onCheckedChange = { checked ->
-                        tasks = tasks.map {
-                            if (it.id == task.id) it.copy(done = checked) else it
+
+        LazyColumn(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            items(
+                items = tasks,
+                key = { it.id }
+            ) { task ->
+                val dismissState = rememberDismissState(
+                    confirmStateChange = { value: DismissValue ->
+                        if (value == DismissValue.DismissedToStart) {
+                            tasks = tasks.filterNot { it.id == task.id }
+                            true
+                        } else {
+                            false
                         }
+                    }
+                )
+
+                SwipeToDismiss(
+                    state = dismissState,
+                    directions = setOf(DismissDirection.EndToStart),
+                    background = {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp, vertical = 4.dp),
+                            horizontalArrangement = Arrangement.End,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = "Delete",
+                                color = MaterialTheme.colorScheme.error,
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                        }
+                    },
+                    dismissContent = {
+                        TaskRow(
+                            task = task,
+                            onCheckedChange = { checked ->
+                                tasks = tasks.map {
+                                    if (it.id == task.id) it.copy(done = checked)
+                                    else it
+                                }
+                            }
+                        )
                     }
                 )
             }
         }
     }
 }
+
 
 @Composable
 private fun TaskRow(
