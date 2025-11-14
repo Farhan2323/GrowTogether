@@ -18,6 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import java.util.UUID
+import androidx.compose.foundation.clickable
 
 data class Friend(
     val id: String = UUID.randomUUID().toString(),
@@ -26,7 +27,7 @@ data class Friend(
 )
 
 @Composable
-fun GardenScreen() {
+fun GardenScreen(onFriendClick: (String) -> Unit) {
     var friends by remember {
         mutableStateOf(
             listOf(
@@ -97,18 +98,39 @@ fun GardenScreen() {
 
         LazyColumn(modifier = Modifier.fillMaxSize()) {
             items(friends, key = { it.id }) { friend ->
-                FriendRow(friend)
+//                FriendRow(friend)
+                FriendRow(friend, onClick = {
+                    onFriendClick(friend.name)
+                })
             }
         }
     }
 }
 
+//@Composable
+//fun FriendRow(friend: Friend) {
+//    Card(
+//        modifier = Modifier
+//            .fillMaxWidth()
+//            .padding(vertical = 4.dp)
+//    ) {
+//        Column(
+//            modifier = Modifier
+//                .padding(horizontal = 12.dp, vertical = 8.dp)
+//        ) {
+//            Text(friend.name, style = MaterialTheme.typography.bodyLarge)
+//            Text("Plant level: ${friend.plantLevel}", style = MaterialTheme.typography.bodyMedium)
+//        }
+//    }
+//}
+
 @Composable
-fun FriendRow(friend: Friend) {
+fun FriendRow(friend: Friend, onClick: () -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 4.dp)
+            .clickable { onClick() }
     ) {
         Column(
             modifier = Modifier

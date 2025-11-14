@@ -22,6 +22,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import java.util.UUID
+import androidx.compose.ui.graphics.Color
 
 data class Task(
     val id: String = UUID.randomUUID().toString(),
@@ -72,10 +73,10 @@ fun HomeScreen() {
 
 
         LazyColumn(
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier.weight(1f)
         ) {
             items(
-                items = tasks,
+                items = tasks.sortedBy { it.done },
                 key = { it.id }
             ) { task ->
                 val dismissState = rememberDismissState(
@@ -147,6 +148,7 @@ private fun TaskRow(
             Spacer(Modifier.width(8.dp))
             Text(
                 text = task.title,
+                color = if (task.done) Color(0xFF4CAF50) else MaterialTheme.colorScheme.onSurface,
                 style = MaterialTheme.typography.bodyLarge
             )
         }
