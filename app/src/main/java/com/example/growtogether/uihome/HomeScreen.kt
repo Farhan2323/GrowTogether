@@ -75,7 +75,8 @@ fun HomeScreen() {
                 .height(200.dp),
             contentAlignment = Alignment.Center
         ) {
-            SimplePlant(completedCount = completedCount)
+//            SimplePlant(completedCount = completedCount)
+            AnimatedFlower()
         }
 
         Spacer(Modifier.height(24.dp))
