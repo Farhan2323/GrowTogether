@@ -1,17 +1,13 @@
 package com.example.growtogether.uihome
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -20,9 +16,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import java.util.UUID
 import androidx.compose.foundation.clickable
@@ -55,10 +48,6 @@ fun GardenScreen(onFriendClick: (String) -> Unit) {
 
     var newFriendName by remember { mutableStateOf("") }
 
-    val gradientBrush = Brush.horizontalGradient(
-        colors = listOf(Color(0xFFEECDA3), Color(0xFFEF629F))
-    )
-
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -66,9 +55,7 @@ fun GardenScreen(onFriendClick: (String) -> Unit) {
     ) {
         Text(
             text = "My Garden",
-            style = MaterialTheme.typography.headlineSmall,
-            fontFamily = FontFamily.Cursive,
-            fontSize = 40.sp
+            style = MaterialTheme.typography.headlineSmall
         )
         Spacer(modifier = Modifier.height(4.dp))
         Text(
@@ -79,18 +66,10 @@ fun GardenScreen(onFriendClick: (String) -> Unit) {
         Spacer(modifier = Modifier.height(16.dp))
 
 
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(gradientBrush, shape = RoundedCornerShape(8.dp))
-                .clip(RoundedCornerShape(8.dp))
-                .clickable {
-                    friends = friends.map { it.copy(plantLevel = it.plantLevel + 1) }
-                }
-                .padding(vertical = 12.dp),
-            contentAlignment = Alignment.Center
-        ) {
-            Text("Message Friends", color = Color.White)
+        Button(onClick = {
+            friends = friends.map { it.copy(plantLevel = it.plantLevel + 1) }
+        }) {
+            Text("Message Friends")
         }
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -102,27 +81,18 @@ fun GardenScreen(onFriendClick: (String) -> Unit) {
                 value = newFriendName,
                 onValueChange = { newFriendName = it },
                 placeholder = { Text("Add a friend") },
-                modifier = Modifier.weight(1f),
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = Color(0xFFEF629F),
-
-                )
+                modifier = Modifier.weight(1f)
             )
             Spacer(modifier = Modifier.width(8.dp))
-            Box(
-                modifier = Modifier
-                    .background(gradientBrush, shape = RoundedCornerShape(8.dp))
-                    .clip(RoundedCornerShape(8.dp))
-                    .clickable {
-                        if (newFriendName.isNotBlank()) {
-                            friends = friends + Friend(name = newFriendName.trim(), plantLevel = 0)
-                            newFriendName = ""
-                        }
+            Button(
+                onClick = {
+                    if (newFriendName.isNotBlank()) {
+                        friends = friends + Friend(name = newFriendName.trim(), plantLevel = 0)
+                        newFriendName = ""
                     }
-                    .padding(horizontal = 24.dp, vertical = 12.dp),
-                contentAlignment = Alignment.Center
+                }
             ) {
-                Text("Add", color = Color.White)
+                Text("Add")
             }
         }
 
@@ -197,10 +167,7 @@ fun FriendRow(friend: Friend, onClick: () -> Unit) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 4.dp)
-            .clickable { onClick() },
-        colors = CardDefaults.cardColors(
-            containerColor = Color(0xFFEECDA3).copy(alpha = 0.6f)
-        )
+            .clickable { onClick() }
     ) {
         Column(
             modifier = Modifier
