@@ -27,7 +27,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.unit.dp
 import java.util.UUID
-import androidx.compose.ui.graphics.Color
+//import androidx.compose.ui.graphics.Color
 
 data class Task(
     val id: String = UUID.randomUUID().toString(),
@@ -75,7 +75,8 @@ fun HomeScreen() {
                 .height(200.dp),
             contentAlignment = Alignment.Center
         ) {
-            SimplePlant(completedCount = completedCount)
+//            SimplePlant(completedCount = completedCount)
+            AnimatedFlower()
         }
 
         Spacer(Modifier.height(24.dp))

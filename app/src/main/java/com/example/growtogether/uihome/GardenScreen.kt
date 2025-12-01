@@ -19,6 +19,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import java.util.UUID
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.material3.CardDefaults
+import androidx.compose.ui.graphics.Color
+
 
 data class Friend(
     val id: String = UUID.randomUUID().toString(),
@@ -28,12 +34,14 @@ data class Friend(
 
 @Composable
 fun GardenScreen(onFriendClick: (String) -> Unit) {
+
     var friends by remember {
         mutableStateOf(
             listOf(
                 Friend(name = "Farhan", plantLevel = 2),
                 Friend(name = "Sruthi", plantLevel = 3),
-                Friend(name = "Christopher", plantLevel = 1)
+                Friend(name = "Christopher", plantLevel = 1),
+                Friend(name = "Sulaeman", plantLevel = 1)
             )
         )
     }
@@ -94,15 +102,80 @@ fun GardenScreen(onFriendClick: (String) -> Unit) {
             text = "Friends' Plants",
             style = MaterialTheme.typography.titleMedium
         )
+//        Row(
+//            modifier = Modifier
+//                .fillMaxWidth()
+//                .padding(top = 8.dp),
+//            horizontalArrangement = Arrangement.SpaceAround
+//        ) {
+//            AnimatedFlower()
+//            AnimatedFlower()
+//        }
         Spacer(modifier = Modifier.height(8.dp))
 
-        LazyColumn(modifier = Modifier.fillMaxSize()) {
+//        LazyColumn(modifier = Modifier.fillMaxSize()) {
+//            items(friends, key = { it.id }) { friend ->
+//
+//                FriendRow(friend, onClick = {
+//                    onFriendClick(friend.name)
+//                })
+//            }
+//        }
+
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(2),
+            modifier = Modifier.fillMaxSize(),
+            contentPadding = PaddingValues(8.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
             items(friends, key = { it.id }) { friend ->
-//                FriendRow(friend)
-                FriendRow(friend, onClick = {
+                FriendCard(friend, onClick = {
                     onFriendClick(friend.name)
                 })
             }
+        }
+
+    }
+}
+
+@Composable
+fun FriendCard(friend: Friend, onClick: () -> Unit) {
+    Card(
+        colors = CardDefaults.cardColors(
+            containerColor = Color.Transparent
+        ),
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onClick() }
+    ) {
+        Column(
+            modifier = Modifier.padding(12.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(friend.name)
+            AnimatedFlower()
+            Text("Plant level: ${friend.plantLevel}")
+        }
+    }
+}
+
+
+@Composable
+fun FriendRow(friend: Friend, onClick: () -> Unit) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp)
+            .clickable { onClick() }
+    ) {
+        Column(
+            modifier = Modifier
+                .padding(horizontal = 12.dp, vertical = 8.dp)
+        ) {
+            Text(friend.name, style = MaterialTheme.typography.bodyLarge)
+            AnimatedFlower()
+            Text("Plant level: ${friend.plantLevel}", style = MaterialTheme.typography.bodyMedium)
         }
     }
 }
@@ -123,25 +196,5 @@ fun GardenScreen(onFriendClick: (String) -> Unit) {
 //        }
 //    }
 //}
-
-@Composable
-fun FriendRow(friend: Friend, onClick: () -> Unit) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 4.dp)
-            .clickable { onClick() }
-    ) {
-        Column(
-            modifier = Modifier
-                .padding(horizontal = 12.dp, vertical = 8.dp)
-        ) {
-            Text(friend.name, style = MaterialTheme.typography.bodyLarge)
-            Text("Plant level: ${friend.plantLevel}", style = MaterialTheme.typography.bodyMedium)
-        }
-    }
-}
-
-
 
 
