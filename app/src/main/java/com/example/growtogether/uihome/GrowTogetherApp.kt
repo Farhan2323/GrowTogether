@@ -1,6 +1,5 @@
 package com.example.growtogether.uihome
 
-
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -25,12 +24,15 @@ enum class BottomTab {
 fun GrowTogetherApp() {
     var selectedTab by remember { mutableStateOf(BottomTab.HOME) }
     var activeFriendChat by remember { mutableStateOf<String?>(null) }
+
+    // 🔗 Shared progress state for the whole app
+    val progressViewModel = remember { ProgressViewModel() }
+
     Scaffold(
         bottomBar = {
             NavigationBar {
                 NavigationBarItem(
                     selected = selectedTab == BottomTab.HOME,
-//                    onClick = { selectedTab = BottomTab.HOME },
                     onClick = {
                         activeFriendChat = null
                         selectedTab = BottomTab.HOME
@@ -40,7 +42,6 @@ fun GrowTogetherApp() {
                 )
                 NavigationBarItem(
                     selected = selectedTab == BottomTab.GARDEN,
-//                    onClick = { selectedTab = BottomTab.GARDEN },
                     onClick = {
                         activeFriendChat = null
                         selectedTab = BottomTab.GARDEN
@@ -50,8 +51,6 @@ fun GrowTogetherApp() {
                 )
                 NavigationBarItem(
                     selected = selectedTab == BottomTab.PROGRESS,
-
-//                    onClick = { selectedTab = BottomTab.PROGRESS },
                     onClick = {
                         activeFriendChat = null
                         selectedTab = BottomTab.PROGRESS
@@ -73,15 +72,15 @@ fun GrowTogetherApp() {
             }
 
             when (selectedTab) {
-                BottomTab.HOME -> HomeScreen()
-//                BottomTab.GARDEN -> GardenScreen()
+                BottomTab.HOME -> HomeScreen(progressViewModel)
                 BottomTab.GARDEN -> GardenScreen(
                     onFriendClick = { friendName: String ->
                         activeFriendChat = friendName
                     }
                 )
-                BottomTab.PROGRESS -> ProgressScreen()
+                BottomTab.PROGRESS -> ProgressScreen(progressViewModel)
             }
         }
     }
 }
+
