@@ -38,7 +38,8 @@ data class Task(
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun HomeScreen() {
+fun HomeScreen(progressViewModel: ProgressViewModel) {
+
     var tasks by remember {
         mutableStateOf(
             listOf(
@@ -49,7 +50,8 @@ fun HomeScreen() {
         )
     }
 
-    val completedCount = tasks.count { it.done }
+    val completedCount = progressViewModel.completedCountToday()
+
 
     Column(
         modifier = Modifier
@@ -135,8 +137,12 @@ fun HomeScreen() {
                                     if (it.id == task.id) it.copy(done = checked)
                                     else it
                                 }
+
+                                // 🔗 Save this change into shared progress
+                                progressViewModel.updateTaskStatus(task.title, checked)
                             }
                         )
+
                     }
                 )
             }
