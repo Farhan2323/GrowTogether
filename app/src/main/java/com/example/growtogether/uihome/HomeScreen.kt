@@ -69,9 +69,21 @@ fun HomeScreen(progressViewModel: ProgressViewModel) {
             style = MaterialTheme.typography.bodyMedium
         )
 
+        Spacer(Modifier.height(12.dp))
+
+// 🌿 Add this animation here!
+        PlantStateAnimation(completedCount = completedCount)
+
+        Spacer(Modifier.height(16.dp))
+        HorizontalDivider()
+        Spacer(Modifier.height(8.dp))
+
+
+
         Spacer(Modifier.height(24.dp))
 
         // Plant Visualization
+        /*
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -81,7 +93,7 @@ fun HomeScreen(progressViewModel: ProgressViewModel) {
 //            SimplePlant(completedCount = completedCount)
             AnimatedFlower()
         }
-
+        */
         Spacer(Modifier.height(24.dp))
         HorizontalDivider()
         Spacer(Modifier.height(12.dp))
@@ -285,3 +297,4 @@ private fun TaskRow(
         }
     }
 }
+
