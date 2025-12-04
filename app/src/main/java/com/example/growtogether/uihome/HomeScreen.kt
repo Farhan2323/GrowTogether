@@ -27,6 +27,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.unit.dp
 import java.util.UUID
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.unit.sp
+import androidx.compose.material3.CheckboxDefaults
+
 //keep these changes
 //import androidx.compose.ui.graphics.Color
 
@@ -61,7 +65,9 @@ fun HomeScreen(progressViewModel: ProgressViewModel) {
 
         Text(
             text = "Grow Together",
-            style = MaterialTheme.typography.headlineSmall
+            style = MaterialTheme.typography.headlineSmall,
+            fontFamily = FontFamily.Cursive,
+            fontSize = 40.sp
         )
         Spacer(Modifier.height(4.dp))
         Text(
@@ -75,7 +81,7 @@ fun HomeScreen(progressViewModel: ProgressViewModel) {
         PlantStateAnimation(completedCount = completedCount)
 
         Spacer(Modifier.height(16.dp))
-        HorizontalDivider()
+//        HorizontalDivider()
         Spacer(Modifier.height(8.dp))
 
 
@@ -273,11 +279,21 @@ private fun TaskRow(
     task: Task,
     onCheckedChange: (Boolean) -> Unit
 ) {
+    val completedCardColor = Color(0xFFD5E8D4) // A soft, earthy green
+    val completedTextColor = Color(0xFF135413) // A dark, forest green
+    val defaultCardColor = Color(0xFFF5F5DC) // A gentle beige/off-white
+
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 4.dp),
-        colors = if (task.done) CardDefaults.cardColors(containerColor = Color.Green.copy(alpha = 0.2f)) else CardDefaults.cardColors()
+        // Use our new colors based on the task's 'done' state
+        colors = if (task.done) {
+            CardDefaults.cardColors(containerColor = completedCardColor)
+        } else {
+            CardDefaults.cardColors(containerColor = defaultCardColor)
+        }
     ) {
         Row(
             modifier = Modifier
@@ -286,12 +302,18 @@ private fun TaskRow(
         ) {
             Checkbox(
                 checked = task.done,
-                onCheckedChange = onCheckedChange
+                onCheckedChange = onCheckedChange,
+                colors = CheckboxDefaults.colors(
+                    checkedColor = completedTextColor, // Use the dark green for the check mark
+                    uncheckedColor = MaterialTheme.colorScheme.onSurfaceVariant, // Keep default for unchecked
+                    checkmarkColor = completedCardColor // Use the light green for the check mark itself
+                )
             )
             Spacer(Modifier.width(8.dp))
             Text(
                 text = task.title,
-                color = if (task.done) Color(0xFF4CAF50) else MaterialTheme.colorScheme.onSurface,
+                // Use the dark green for completed tasks for better contrast
+                color = if (task.done) completedTextColor else MaterialTheme.colorScheme.onSurface,
                 style = MaterialTheme.typography.bodyLarge
             )
         }

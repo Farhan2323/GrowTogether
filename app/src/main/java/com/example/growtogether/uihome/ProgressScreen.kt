@@ -18,6 +18,8 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import java.util.Calendar
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.unit.sp
 
 @Composable
 fun ProgressScreen(progressViewModel: ProgressViewModel) {
@@ -47,7 +49,14 @@ fun ProgressScreen(progressViewModel: ProgressViewModel) {
     ) {
         Text(
             text = "Progress",
-            style = MaterialTheme.typography.headlineSmall
+            style = MaterialTheme.typography.headlineSmall,
+            fontFamily = FontFamily.Cursive,
+            fontSize = 40.sp
+        )
+        Spacer(Modifier.height(4.dp))
+        Text(
+            text = "Let's see how you're doing this month!",
+            style = MaterialTheme.typography.bodyMedium
         )
 
         Spacer(Modifier.height(4.dp))
