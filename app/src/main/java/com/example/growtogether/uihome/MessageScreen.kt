@@ -32,11 +32,9 @@ import androidx.compose.ui.unit.dp
 import com.example.growtogether.R
 
 @Composable
-fun messageScreen(friendName: String, onBack: () -> Unit) {
+fun messageScreen(friendName: String, messages: List<String>, onSendMessage: (String) -> Unit, onBack: () -> Unit) {
 
     val appBarColor = Color(0xFFEECDA3)
-
-    val messages = remember { mutableStateListOf<String>() }
     var messageText by remember { mutableStateOf("") }
 
     val interactionSource = remember { MutableInteractionSource() }
@@ -149,7 +147,7 @@ fun messageScreen(friendName: String, onBack: () -> Unit) {
                     .clip(RoundedCornerShape(8.dp))
                     .clickable {
                         if (messageText.isNotBlank()) {
-                            messages.add(messageText)
+                            onSendMessage(messageText)
                             messageText = ""
                         }
                     }
