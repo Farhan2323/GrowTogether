@@ -110,7 +110,7 @@ fun GardenScreen(onFriendClick: (Friend) -> Unit) {
         Box(modifier = Modifier.fillMaxSize()) {
 
             Image(
-                painter = painterResource(id = R.drawable.background_with_banner),
+                painter = painterResource(id = R.drawable.bg),
                 contentDescription = null,
                 modifier = Modifier
                     .fillMaxSize()
@@ -130,28 +130,26 @@ fun GardenScreen(onFriendClick: (Friend) -> Unit) {
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 item(span = { GridItemSpan(maxLineSpan) }) {
-                    Text(
-                        text = "My Garden",
-                        style = MaterialTheme.typography.headlineSmall,
-                        fontFamily = FontFamily.Cursive,
-                        fontSize = 40.sp,
-                        modifier = Modifier.padding(
-                            start = 20.dp,
-                            top = 4.dp,
-                            end = 20.dp,
-                            bottom = 4.dp
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(8.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            text = "My Garden",
+                            style = MaterialTheme.typography.headlineSmall,
+                            fontFamily = FontFamily.Cursive,
+                            fontSize = 40.sp
                         )
-                    )
+                        Spacer(modifier = Modifier.height(4.dp))
+//                        Text(
+//                            text = "See your friends' plant progress 🌿",
+//                            style = MaterialTheme.typography.bodyMedium
+//                        )
+                    }
                 }
-                item(span = { GridItemSpan(maxLineSpan) }) {
-                    Spacer(modifier = Modifier.height(4.dp))
-                }
-                item(span = { GridItemSpan(maxLineSpan) }) {
-                    Text(
-                        text = "See your friends' plant progress 🌿",
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-                }
+
                 items(friends, key = { it.id }) { friend ->
                     FriendCard(friend, onClick = {
                         onFriendClick(friend)
