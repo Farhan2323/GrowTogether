@@ -32,20 +32,38 @@ import java.util.Calendar
 @Composable
 fun ProgressScreen(progressViewModel: ProgressViewModel) {
 
-    val dailyHistory = progressViewModel.dailyHistory
-    val calendar = Calendar.getInstance()
-    val currentMonthIndex = calendar.get(Calendar.MONTH) // 0..11
-    val currentYear = calendar.get(Calendar.YEAR)
-    val daysInMonth = calendar.getActualMaximum(Calendar.DAY_OF_MONTH)
-    val todayDay = calendar.get(Calendar.DAY_OF_MONTH)
+    val initialCalendar = Calendar.getInstance()
+    var displayedYear by remember { mutableStateOf(initialCalendar.get(Calendar.YEAR)) }
+    var displayedMonthIndex by remember { mutableStateOf(initialCalendar.get(Calendar.MONTH)) }
 
-    val firstDayOfMonthCalendar = Calendar.getInstance().apply {
-        set(Calendar.YEAR, currentYear)
-        set(Calendar.MONTH, currentMonthIndex)
+    val completeHistory = remember {
+        val currentYear = initialCalendar.get(Calendar.YEAR)
+        val currentMonth = initialCalendar.get(Calendar.MONTH)
+
+        val prevMonthCalendar = (initialCalendar.clone() as Calendar).apply { add(Calendar.MONTH, -1) }
+        val prevYear = prevMonthCalendar.get(Calendar.YEAR)
+        val prevMonth = prevMonthCalendar.get(Calendar.MONTH)
+
+        mapOf(
+            (prevYear to prevMonth) to generateDummyDataForMonth(prevYear, prevMonth),
+            (currentYear to currentMonth) to progressViewModel.dailyHistory
+        )
+    }
+
+    val dailyHistory = completeHistory[displayedYear to displayedMonthIndex] ?: emptyMap()
+
+    val displayedCalendar = Calendar.getInstance().apply {
+        set(Calendar.YEAR, displayedYear)
+        set(Calendar.MONTH, displayedMonthIndex)
         set(Calendar.DAY_OF_MONTH, 1)
     }
-    val firstDayOfWeek = firstDayOfMonthCalendar.get(Calendar.DAY_OF_WEEK)
+    val daysInMonth = displayedCalendar.getActualMaximum(Calendar.DAY_OF_MONTH)
+    val firstDayOfWeek = displayedCalendar.get(Calendar.DAY_OF_WEEK)
     val emptyCellsAtStart = firstDayOfWeek - 1
+
+    val todayDay = if (displayedYear == initialCalendar.get(Calendar.YEAR) && displayedMonthIndex == initialCalendar.get(Calendar.MONTH)) {
+        initialCalendar.get(Calendar.DAY_OF_MONTH)
+    } else -1 // Not today if not the current month
 
     var selectedDay by remember { mutableStateOf<Int?>(null) }
 
@@ -54,7 +72,6 @@ fun ProgressScreen(progressViewModel: ProgressViewModel) {
         "July", "August", "September", "October", "November", "December"
     )
 
-    // --- IMPROVEMENT: Correctly calculate streak and animate visibility ---
     val longestStreak = longestStreak(dailyHistory, daysInMonth)
     val totalTasks = dailyHistory.values.sumOf { it.size }
     val activeDays = dailyHistory.keys.size
@@ -69,7 +86,6 @@ fun ProgressScreen(progressViewModel: ProgressViewModel) {
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        // --- IMPROVEMENT: Animate title visibility ---
         AnimatedVisibility(
             visible = isVisible,
             enter = fadeIn(animationSpec = tween(durationMillis = 500)) +
@@ -84,7 +100,7 @@ fun ProgressScreen(progressViewModel: ProgressViewModel) {
                 )
                 Spacer(Modifier.height(4.dp))
                 Text(
-                    text = "Let's see how you're doing this month!",
+                    text = "Let's see how you're doing!",
                     style = MaterialTheme.typography.bodyMedium
                 )
             }
@@ -92,8 +108,7 @@ fun ProgressScreen(progressViewModel: ProgressViewModel) {
 
         Spacer(Modifier.height(16.dp))
 
-        // --- IMPROVEMENT: Add an empty state for new users ---
-        if (dailyHistory.isEmpty()) {
+        if (completeHistory.values.all { it.isEmpty() }) {
             Column(
                 modifier = Modifier.fillMaxSize(),
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -113,16 +128,45 @@ fun ProgressScreen(progressViewModel: ProgressViewModel) {
                 )
             }
         } else {
-            // --- Regular content for users with history ---
             Column {
-                Text(
-                    text = "${monthNames[currentMonthIndex]} $currentYear",
-                    style = MaterialTheme.typography.titleMedium
-                )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Button(onClick = {
+                        var newMonth = displayedMonthIndex - 1
+                        var newYear = displayedYear
+                        if (newMonth < 0) {
+                            newMonth = 11
+                            newYear--
+                        }
+                        displayedMonthIndex = newMonth
+                        displayedYear = newYear
+                    }) { Text("<") }
+
+                    Text(
+                        text = "${monthNames[displayedMonthIndex]} $displayedYear",
+                        style = MaterialTheme.typography.titleMedium
+                    )
+
+                    Button(onClick = {
+                        var newMonth = displayedMonthIndex + 1
+                        var newYear = displayedYear
+                        if (newMonth > 11) {
+                            newMonth = 0
+                            newYear++
+                        }
+                        if (newYear < initialCalendar.get(Calendar.YEAR) ||
+                            (newYear == initialCalendar.get(Calendar.YEAR) && newMonth <= initialCalendar.get(Calendar.MONTH))) {
+                            displayedMonthIndex = newMonth
+                            displayedYear = newYear
+                        }
+                    }) { Text(">") }
+                }
 
                 Spacer(Modifier.height(12.dp))
 
-                // Overview card
                 val overviewBrush = Brush.horizontalGradient(
                     listOf(Color(0xFFEECDA3), Color(0xFFEF629F))
                 )
@@ -172,7 +216,7 @@ fun ProgressScreen(progressViewModel: ProgressViewModel) {
             DayDetailDialog(
                 day = day,
                 tasks = dailyHistory[day] ?: emptySet(),
-                monthLabel = monthNames[currentMonthIndex],
+                monthLabel = monthNames[displayedMonthIndex],
                 onDismiss = { selectedDay = null }
             )
         }
@@ -257,7 +301,6 @@ private fun DayCell(
         if (isPerfect) append(" 🔥")
     }
 
-    // --- IMPROVEMENT: Add a border for today's date ---
     val borderModifier = if (isToday) {
         Modifier.border(2.dp, MaterialTheme.colorScheme.primary, CircleShape)
     } else {
@@ -267,7 +310,7 @@ private fun DayCell(
     Box(
         modifier = Modifier
             .size(36.dp)
-            .then(borderModifier) // Apply the border here
+            .then(borderModifier)
             .clip(CircleShape)
             .background(bgColor)
             .clickable { onClick() },
@@ -325,17 +368,32 @@ private fun DayDetailDialog(
 private fun longestStreak(dailyHistory: Map<Int, Set<String>>, daysInMonth: Int): Int {
     var current = 0
     var best = 0
-    // Loop only through the days of the current month
     for (day in 1..daysInMonth) {
         val active = dailyHistory[day]?.isNotEmpty() == true
         if (active) {
             current++
         } else {
-            // Reset the streak if a day is missed, but save the best score first
             best = maxOf(best, current)
             current = 0
         }
     }
-    // Final check in case the month ends on an active streak
     return maxOf(best, current)
+}
+
+private fun generateDummyDataForMonth(year: Int, month: Int): Map<Int, Set<String>> {
+    val calendar = Calendar.getInstance().apply {
+        set(Calendar.YEAR, year)
+        set(Calendar.MONTH, month)
+    }
+    val daysInMonth = calendar.getActualMaximum(Calendar.DAY_OF_MONTH)
+    val dummyHistory = mutableMapOf<Int, Set<String>>()
+    val tasks = listOf("Message a friend", "Take a short walk", "Drink water", "Read a chapter", "Meditate")
+
+    for (day in 1..daysInMonth) {
+        if (Math.random() > 0.3) { // 70% chance to have tasks
+            val taskCount = (1..3).random()
+            dummyHistory[day] = tasks.shuffled().take(taskCount).toSet()
+        }
+    }
+    return dummyHistory
 }
