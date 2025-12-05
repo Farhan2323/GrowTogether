@@ -175,7 +175,7 @@ fun messageScreen(friend: Friend, friendName: String, growthLevel: Int = 10, mes
 }
 
 @Composable
-fun AnimatedFlower(direction: String = "left", growthLevel: Int = 10) {
+fun AnimatedFlower(direction: String = "left", growthLevel: Int = 10, size: Float = 1f) {
     var stretched by remember { mutableStateOf(false) }
     var newDirection = direction
     if (growthLevel == 3) {
@@ -186,7 +186,7 @@ fun AnimatedFlower(direction: String = "left", growthLevel: Int = 10) {
         }
     }
     val scaleX by animateFloatAsState(
-        targetValue = if (stretched) 1f else 0.8f,
+        targetValue = if (stretched) 1f else 0.8f ,
         animationSpec = infiniteRepeatable(
             animation = tween(900, easing = LinearOutSlowInEasing),
             repeatMode = RepeatMode.Reverse
@@ -195,7 +195,7 @@ fun AnimatedFlower(direction: String = "left", growthLevel: Int = 10) {
     )
 
     val scaleY by animateFloatAsState(
-        targetValue = if (stretched) 1f else 0.8f,
+        targetValue = if (stretched) 1f  else 0.8f ,
         animationSpec = infiniteRepeatable(
             animation = tween(900, easing = LinearOutSlowInEasing),
             repeatMode = RepeatMode.Reverse
@@ -218,13 +218,13 @@ fun AnimatedFlower(direction: String = "left", growthLevel: Int = 10) {
     )
 
     val plantId = if (growthLevel == 10) R.drawable.plantnew else plantIds[growthLevel]
-
+    val finSize = 120 * size
     Image(
         painter = painterResource(id = plantId),
         contentDescription = null,
         modifier = Modifier
             .padding(10.dp)
-            .size(120.dp)
+            .size(finSize.dp)
             .graphicsLayer(
                 scaleX = 1 / scaleX * flipX,   // flip for right flower
                 scaleY = scaleY

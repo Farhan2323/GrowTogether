@@ -29,6 +29,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontFamily // Added this
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp // Added this
+import androidx.compose.foundation.Image
+import androidx.compose.ui.res.painterResource
+import com.example.growtogether.R
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.foundation.lazy.grid.*
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.ui.graphics.graphicsLayer
 import java.util.UUID
 
 
@@ -46,7 +53,7 @@ fun GardenScreen(onFriendClick: (Friend) -> Unit) {
             listOf(
                 Friend(name = "Farhan", plantLevel = 3),
                 Friend(name = "Sruthi", plantLevel = 3),
-                Friend(name = "Christopher", plantLevel = 3),
+                Friend(name = "Chris", plantLevel = 3),
                 Friend(name = "Sulaeman", plantLevel = 3)
             )
         )
@@ -61,76 +68,23 @@ fun GardenScreen(onFriendClick: (Friend) -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp)
+//            .padding(16.dp)
     ) {
-        Text(
-            text = "My Garden",
-            style = MaterialTheme.typography.headlineSmall,
-            fontFamily = FontFamily.Cursive,
-            fontSize = 40.sp
-        )
-        Spacer(modifier = Modifier.height(4.dp))
-        Text(
-            text = "See your friends' plant progress 🌿",
-            style = MaterialTheme.typography.bodyMedium
-        )
+
 
 //        Spacer(modifier = Modifier.height(16.dp))
 
+//        Spacer(modifier = Modifier.height(16.dp))
+//        Divider()
+//        Spacer(modifier = Modifier.height(8.dp))
 
-//        Box(
-//            modifier = Modifier
-//                .fillMaxWidth()
-//                .background(gradientBrush, shape = RoundedCornerShape(8.dp))
-//                .clip(RoundedCornerShape(8.dp))
-//                .clickable {
-//                    friends = friends.map { it.copy(plantLevel = Math.min(it.plantLevel + 1, 3)) }
-//                }
-//                .padding(vertical = 12.dp),
-//            contentAlignment = Alignment.Center
-//        ) {
-//            Text("Message Friends", color = Color.White)
-//        }
 
-        Spacer(modifier = Modifier.height(16.dp))
-        Divider()
-        Spacer(modifier = Modifier.height(8.dp))
+//        Spacer(modifier = Modifier.height(40.dp))
 
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            OutlinedTextField(
-                value = newFriendName,
-                onValueChange = { newFriendName = it },
-                placeholder = { Text("Add a friend") },
-                modifier = Modifier.weight(1f),
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = Color(0xFFEF629F),
-
-                )
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-            Box(
-                modifier = Modifier
-                    .background(gradientBrush, shape = RoundedCornerShape(8.dp))
-                    .clip(RoundedCornerShape(8.dp))
-                    .clickable {
-                        if (newFriendName.isNotBlank()) {
-                            friends = friends + Friend(name = newFriendName.trim(), plantLevel = 1)
-                            newFriendName = ""
-                        }
-                    }
-                    .padding(horizontal = 24.dp, vertical = 12.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                Text("Add", color = Color.White)
-            }
-        }
-
-        Spacer(modifier = Modifier.height(12.dp))
-
-        Text(
-            text = "Friends' Plants",
-            style = MaterialTheme.typography.titleMedium
-        )
+//        Text(
+//            text = "Friends' Plants",
+//            style = MaterialTheme.typography.titleMedium
+//        )
 //        Row(
 //            modifier = Modifier
 //                .fillMaxWidth()
@@ -140,7 +94,7 @@ fun GardenScreen(onFriendClick: (Friend) -> Unit) {
 //            AnimatedFlower()
 //            AnimatedFlower()
 //        }
-        Spacer(modifier = Modifier.height(8.dp))
+//        Spacer(modifier = Modifier.height(8.dp))
 
 //        LazyColumn(modifier = Modifier.fillMaxSize()) {
 //            items(friends, key = { it.id }) { friend ->
@@ -151,18 +105,94 @@ fun GardenScreen(onFriendClick: (Friend) -> Unit) {
 //            }
 //        }
 
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(2),
-            modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(8.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            items(friends, key = { it.id }) { friend ->
-                FriendCard(friend, onClick = {
-                    onFriendClick(friend)
-                })
+        val gridState = rememberLazyGridState()
+
+        Box(modifier = Modifier.fillMaxSize()) {
+
+            Image(
+                painter = painterResource(id = R.drawable.background_with_banner),
+                contentDescription = null,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .graphicsLayer {
+                        // Move background WITH the scroll
+                        translationY = -gridState.firstVisibleItemScrollOffset.toFloat()
+                    },
+                contentScale = ContentScale.Crop,
+                alignment = Alignment.TopCenter
+            )
+            LazyVerticalGrid(
+                state = gridState,
+                columns = GridCells.Fixed(2),
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(8.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                item(span = { GridItemSpan(maxLineSpan) }) {
+                    Text(
+                        text = "My Garden",
+                        style = MaterialTheme.typography.headlineSmall,
+                        fontFamily = FontFamily.Cursive,
+                        fontSize = 40.sp,
+                        modifier = Modifier.padding(
+                            start = 20.dp,
+                            top = 4.dp,
+                            end = 20.dp,
+                            bottom = 4.dp
+                        )
+                    )
+                }
+                item(span = { GridItemSpan(maxLineSpan) }) {
+                    Spacer(modifier = Modifier.height(4.dp))
+                }
+                item(span = { GridItemSpan(maxLineSpan) }) {
+                    Text(
+                        text = "See your friends' plant progress 🌿",
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                }
+                items(friends, key = { it.id }) { friend ->
+                    FriendCard(friend, onClick = {
+                        onFriendClick(friend)
+                    })
+                }
+                item(span = { GridItemSpan(maxLineSpan) }) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        OutlinedTextField(
+                            value = newFriendName,
+                            onValueChange = { newFriendName = it },
+                            placeholder = { Text("Add a friend") },
+                            modifier = Modifier.weight(1f),
+                            colors = OutlinedTextFieldDefaults.colors(
+                                focusedBorderColor = Color(0xFFEF629F),
+
+                                )
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Box(
+                            modifier = Modifier
+                                .background(gradientBrush, shape = RoundedCornerShape(8.dp))
+                                .clip(RoundedCornerShape(8.dp))
+                                .clickable {
+                                    if (newFriendName.isNotBlank()) {
+                                        friends = friends + Friend(
+                                            name = newFriendName.trim(),
+                                            plantLevel = 1
+                                        )
+                                        newFriendName = ""
+                                    }
+                                }
+                                .padding(horizontal = 24.dp, vertical = 12.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text("Add", color = Color.White)
+                        }
+                    }
+                }
             }
+
+
         }
 
     }
@@ -183,8 +213,8 @@ fun FriendCard(friend: Friend, onClick: () -> Unit) {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(friend.name)
-            AnimatedFlower(growthLevel = friend.plantLevel)
-            Text("Plant level: ${friend.plantLevel}")
+            AnimatedFlower(growthLevel = friend.plantLevel, size = 1.5f)
+            Text("Level: ${friend.plantLevel}")
         }
     }
 }
