@@ -71,40 +71,6 @@ fun GardenScreen(onFriendClick: (Friend) -> Unit) {
 //            .padding(16.dp)
     ) {
 
-
-//        Spacer(modifier = Modifier.height(16.dp))
-
-//        Spacer(modifier = Modifier.height(16.dp))
-//        Divider()
-//        Spacer(modifier = Modifier.height(8.dp))
-
-
-//        Spacer(modifier = Modifier.height(40.dp))
-
-//        Text(
-//            text = "Friends' Plants",
-//            style = MaterialTheme.typography.titleMedium
-//        )
-//        Row(
-//            modifier = Modifier
-//                .fillMaxWidth()
-//                .padding(top = 8.dp),
-//            horizontalArrangement = Arrangement.SpaceAround
-//        ) {
-//            AnimatedFlower()
-//            AnimatedFlower()
-//        }
-//        Spacer(modifier = Modifier.height(8.dp))
-
-//        LazyColumn(modifier = Modifier.fillMaxSize()) {
-//            items(friends, key = { it.id }) { friend ->
-//
-//                FriendRow(friend, onClick = {
-//                    onFriendClick(friend.name)
-//                })
-//            }
-//        }
-
         val gridState = rememberLazyGridState()
 
         Box(modifier = Modifier.fillMaxSize()) {
@@ -113,12 +79,12 @@ fun GardenScreen(onFriendClick: (Friend) -> Unit) {
                 painter = painterResource(id = R.drawable.bg),
                 contentDescription = null,
                 modifier = Modifier
-                    .fillMaxSize()
+                    .fillMaxWidth()
                     .graphicsLayer {
                         // Move background WITH the scroll
                         translationY = -gridState.firstVisibleItemScrollOffset.toFloat()
                     },
-                contentScale = ContentScale.Crop,
+                contentScale = ContentScale.FillWidth,
                 alignment = Alignment.TopCenter
             )
             LazyVerticalGrid(
@@ -142,14 +108,12 @@ fun GardenScreen(onFriendClick: (Friend) -> Unit) {
                             fontFamily = FontFamily.Cursive,
                             fontSize = 40.sp
                         )
-                        Spacer(modifier = Modifier.height(4.dp))
-//                        Text(
-//                            text = "See your friends' plant progress 🌿",
-//                            style = MaterialTheme.typography.bodyMedium
-//                        )
+//                        Spacer(modifier = Modifier.height(4.dp))
                     }
                 }
-
+                item(span = { GridItemSpan(maxLineSpan) }) {
+                    Spacer(modifier = Modifier.height(24.dp))
+                }
                 items(friends, key = { it.id }) { friend ->
                     FriendCard(friend, onClick = {
                         onFriendClick(friend)
@@ -207,11 +171,12 @@ fun FriendCard(friend: Friend, onClick: () -> Unit) {
             .clickable { onClick() }
     ) {
         Column(
-            modifier = Modifier.padding(12.dp),
+            modifier = Modifier.padding(vertical = 4.dp, horizontal = 8.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(friend.name)
+
             AnimatedFlower(growthLevel = friend.plantLevel, size = 1.5f)
+            Text(friend.name)
             Text("Level: ${friend.plantLevel}")
         }
     }

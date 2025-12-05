@@ -168,7 +168,7 @@ fun ProgressScreen(progressViewModel: ProgressViewModel) {
                 Spacer(Modifier.height(12.dp))
 
                 val overviewBrush = Brush.horizontalGradient(
-                    listOf(Color(0xFFEECDA3), Color(0xFFEF629F))
+                    listOf(Color(0xFFEF629F), Color(0xFFEECDA3))
                 )
                 Card(
                     modifier = Modifier.fillMaxWidth(),
