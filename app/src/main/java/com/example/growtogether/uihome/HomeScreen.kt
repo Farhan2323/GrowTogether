@@ -1,14 +1,18 @@
 package com.example.growtogether.uihome
 
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.DismissDirection
 import androidx.compose.material.DismissValue
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.SwipeToDismiss
 import androidx.compose.material.rememberDismissState
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
@@ -22,13 +26,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
-import androidx.compose.ui.unit.dp
-import java.util.UUID
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import java.util.UUID
 import androidx.compose.material3.CheckboxDefaults
 
 //keep these changes
@@ -57,6 +63,7 @@ fun HomeScreen(taskViewModel: TaskViewModel, progressViewModel: ProgressViewMode
     val tasks = taskViewModel.tasks
 
     val completedCount = progressViewModel.completedCountToday()
+    var completedTaskTitle by remember { mutableStateOf<String?>(null) }
 
 
     Column(
@@ -170,6 +177,9 @@ fun HomeScreen(taskViewModel: TaskViewModel, progressViewModel: ProgressViewMode
                             onCheckedChange = { checked ->
                                 taskViewModel.updateTask(task.id, checked)
                                 progressViewModel.updateTaskStatus(task.title, checked)
+                                if (checked) {
+                                    completedTaskTitle = task.title
+                                }
                             }
                         )
 
@@ -177,7 +187,39 @@ fun HomeScreen(taskViewModel: TaskViewModel, progressViewModel: ProgressViewMode
                 )
             }
         }
+
+        completedTaskTitle?.let { taskTitle ->
+            TaskCompletionDialog(
+                taskTitle = taskTitle,
+                onDismiss = { completedTaskTitle = null }
+            )
+        }
     }
+}
+
+@Composable
+private fun TaskCompletionDialog(
+    taskTitle: String,
+    onDismiss: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Task Completed! ✨") },
+        text = { Text("You're doing great! You've successfully completed:\n\n\"$taskTitle\"") },
+        confirmButton = {
+            Box(
+                modifier = Modifier
+                    .background(Color(0xFFEF629F), shape = RoundedCornerShape(8.dp))
+                    .clip(RoundedCornerShape(8.dp))
+                    .clickable(onClick = onDismiss)
+                    .padding(horizontal = 24.dp, vertical = 12.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Text("Continue", color = Color.White)
+            }
+        },
+        containerColor = Color(0xFFFFF7F8),
+    )
 }
 
 @Composable
@@ -225,4 +267,3 @@ private fun TaskRow(
         }
     }
 }
-
