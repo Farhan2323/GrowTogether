@@ -46,7 +46,7 @@ import androidx.compose.ui.unit.dp
 import com.example.growtogether.R
 
 @Composable
-fun messageScreen(friendName: String, growthLevel: Int = 10, messages: List<String>, onSendMessage: (String) -> Unit, onBack: () -> Unit) {
+fun messageScreen(friend: Friend, friendName: String, growthLevel: Int = 10, messages: List<String>, onSendMessage: (String) -> Unit, onBack: () -> Unit) {
 
     val appBarColor = Color(0xFFEECDA3)
     var messageText by remember { mutableStateOf("") }
@@ -104,8 +104,8 @@ fun messageScreen(friendName: String, growthLevel: Int = 10, messages: List<Stri
                 .padding(top = 8.dp),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            AnimatedFlower(direction = "left")
-            AnimatedFlower(direction = "right", growthLevel = growthLevel)
+            AnimatedFlower(direction = "right", growthLevel = friend.plantLevel)
+            AnimatedFlower(direction = "left", growthLevel = growthLevel)
         }
 
 
@@ -177,7 +177,14 @@ fun messageScreen(friendName: String, growthLevel: Int = 10, messages: List<Stri
 @Composable
 fun AnimatedFlower(direction: String = "left", growthLevel: Int = 10) {
     var stretched by remember { mutableStateOf(false) }
-
+    var newDirection = direction
+    if (growthLevel == 3) {
+        if (direction == "left") {
+            newDirection = "right"
+        } else {
+            newDirection = "left"
+        }
+    }
     val scaleX by animateFloatAsState(
         targetValue = if (stretched) 1f else 0.8f,
         animationSpec = infiniteRepeatable(
@@ -201,13 +208,13 @@ fun AnimatedFlower(direction: String = "left", growthLevel: Int = 10) {
     }
 
 
-    val flipX = if (direction == "right") -1f else 1f
+    val flipX = if (newDirection == "right") -1f else 1f
 
     val plantIds = arrayOf(
         R.drawable.plant_baby_sad,
         R.drawable.plant_baby,
         R.drawable.plant_mid,
-        R.drawable.plant_mid
+        R.drawable.plantnew
     )
 
     val plantId = if (growthLevel == 10) R.drawable.plantnew else plantIds[growthLevel]

@@ -81,6 +81,7 @@ fun ProgressScreen(progressViewModel: ProgressViewModel) {
                 modifier = Modifier
                     .background(overviewBrush)
                     .padding(12.dp)
+                    .fillMaxWidth()
             ) {
                 Column {
                     Text(
@@ -94,7 +95,7 @@ fun ProgressScreen(progressViewModel: ProgressViewModel) {
                     Text("🔥 Longest streak: $longestStreak days", color = Color.White)
                     Spacer(Modifier.height(4.dp))
                     Text(
-                        text = "Colors: 🔴 low • 🟡 medium • 🟢 high • 🌱 today • 🔥 perfect day",
+                        text = "Colors:\n🔴 low      • 🟡 medium       • 🟢 high\n🌱 today  • 🔥 perfect day",
                         style = MaterialTheme.typography.bodySmall,
                         color = Color.White
                     )
@@ -156,7 +157,6 @@ private fun CalendarMonth(
             ) {
                 repeat(7) {
                     if (day <= daysInMonth) {
-                        // 🔑 capture the current value BEFORE incrementing
                         val thisDay = day
                         val completedCount = dailyHistory[thisDay]?.size ?: 0
 
@@ -199,7 +199,7 @@ private fun DayCell(
 
     val label = buildString {
         append(day)
-        if (isToday) append(" 🌱")
+        if (isToday && !isPerfect) append(" 🌱")
         if (isPerfect) append(" 🔥")
     }
 

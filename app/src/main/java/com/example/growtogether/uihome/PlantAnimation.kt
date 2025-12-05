@@ -33,7 +33,8 @@ fun PlantStateAnimation(
     // 4+       -> adult (overworked / stressed)
     val stage = when (completedCount) {
         0 -> 0
-        1, 2 -> 1
+        1 -> 1
+        2 -> 2
         3 -> 3
         else -> 4
     }
@@ -70,7 +71,8 @@ fun PlantStateAnimation(
             val resId = when (s) {
                 0 -> R.drawable.plant_baby_sad
                 1 -> R.drawable.plant_baby
-                3 -> R.drawable.plant_mid
+                2 -> R.drawable.plant_mid
+                3 -> R.drawable.plantnew
                 else -> R.drawable.plant_adult_sad
             }
 

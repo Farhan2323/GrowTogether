@@ -23,7 +23,8 @@ enum class BottomTab {
 @Composable
 fun GrowTogetherApp() {
     var selectedTab by remember { mutableStateOf(BottomTab.HOME) }
-    var activeFriendChat by remember { mutableStateOf<String?>(null) }
+    var activeFriendChat by remember { mutableStateOf<Friend?>(null) }
+    val taskViewModel = remember { TaskViewModel() }
 
     var conversations by remember {
         mutableStateOf<Map<String, List<String>>>(emptyMap())
@@ -68,25 +69,29 @@ fun GrowTogetherApp() {
                 .padding(innerPadding)
                 .fillMaxSize()
         ) {
-            val friendName = activeFriendChat
-            if (friendName != null) {
-                val friendMessages = conversations[friendName] ?: emptyList()
+            val friend = activeFriendChat
+            if (friend != null) {
+                val friendMessages = conversations[friend.name] ?: emptyList()
                 messageScreen(
-                    friendName = friendName,
+                    friend = friend,                    // now valid
+                    friendName = friend.name,           // use friend.name
                     growthLevel = progressViewModel.completedCountToday(),
                     messages = friendMessages,
                     onSendMessage = { text: String ->
-                        val current = conversations[friendName] ?: emptyList()
+                        val current = conversations[friend.name] ?: emptyList()
                         conversations = conversations.toMutableMap().apply {
-                            put(friendName, current + text)
+                            put(friend.name, current + text)
                         }
                     },
-                    onBack = { activeFriendChat = null}
+                    onBack = { activeFriendChat = null }
                 )
                 return@Box
             }
             when (selectedTab) {
-                BottomTab.HOME -> HomeScreen(progressViewModel = progressViewModel)
+                BottomTab.HOME -> HomeScreen(
+                    progressViewModel = progressViewModel,
+                    taskViewModel = taskViewModel
+                )
                 BottomTab.GARDEN -> GardenScreen(
                     onFriendClick = { clickedFriendName ->
                         activeFriendChat = clickedFriendName

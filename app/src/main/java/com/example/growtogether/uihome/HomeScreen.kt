@@ -42,17 +42,19 @@ data class Task(
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun HomeScreen(progressViewModel: ProgressViewModel) {
+fun HomeScreen(taskViewModel: TaskViewModel, progressViewModel: ProgressViewModel) {
 
-    var tasks by remember {
-        mutableStateOf(
-            listOf(
-                Task(title = "Message a friend"),
-                Task(title = "Take a short walk"),
-                Task(title = "Drink water")
-            )
-        )
-    }
+
+//    var tasks by remember {
+//        mutableStateOf(
+//            listOf(
+//                Task(title = "Message a friend"),
+//                Task(title = "Take a short walk"),
+//                Task(title = "Drink water")
+//            )
+//        )
+//    }
+    val tasks = taskViewModel.tasks
 
     val completedCount = progressViewModel.completedCountToday()
 
@@ -119,13 +121,19 @@ fun HomeScreen(progressViewModel: ProgressViewModel) {
                 key = { it.id }
             ) { task ->
                 val dismissState = rememberDismissState(
-                    confirmStateChange = { value: DismissValue ->
+//                    confirmStateChange = { value: DismissValue ->
+//                        if (value == DismissValue.DismissedToStart) {
+//                            tasks = tasks.filterNot { it.id == task.id }
+//                            true
+//                        } else {
+//                            false
+//                        }
+//                    }
+                    confirmStateChange = { value ->
                         if (value == DismissValue.DismissedToStart) {
-                            tasks = tasks.filterNot { it.id == task.id }
+                            taskViewModel.deleteTask(task.id)
                             true
-                        } else {
-                            false
-                        }
+                        } else false
                     }
                 )
 
@@ -150,13 +158,17 @@ fun HomeScreen(progressViewModel: ProgressViewModel) {
                     dismissContent = {
                         TaskRow(
                             task = task,
+//                            onCheckedChange = { checked ->
+//                                tasks = tasks.map {
+//                                    if (it.id == task.id) it.copy(done = checked)
+//                                    else it
+//                                }
+//
+//                                // Save this change into shared progress
+//                                progressViewModel.updateTaskStatus(task.title, checked)
+//                            }
                             onCheckedChange = { checked ->
-                                tasks = tasks.map {
-                                    if (it.id == task.id) it.copy(done = checked)
-                                    else it
-                                }
-
-                                // 🔗 Save this change into shared progress
+                                taskViewModel.updateTask(task.id, checked)
                                 progressViewModel.updateTaskStatus(task.title, checked)
                             }
                         )

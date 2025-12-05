@@ -39,15 +39,15 @@ data class Friend(
 )
 
 @Composable
-fun GardenScreen(onFriendClick: (String) -> Unit) {
+fun GardenScreen(onFriendClick: (Friend) -> Unit) {
 
     var friends by remember {
         mutableStateOf(
             listOf(
-                Friend(name = "Farhan", plantLevel = 2),
+                Friend(name = "Farhan", plantLevel = 3),
                 Friend(name = "Sruthi", plantLevel = 3),
-                Friend(name = "Christopher", plantLevel = 1),
-                Friend(name = "Sulaeman", plantLevel = 1)
+                Friend(name = "Christopher", plantLevel = 3),
+                Friend(name = "Sulaeman", plantLevel = 3)
             )
         )
     }
@@ -75,22 +75,22 @@ fun GardenScreen(onFriendClick: (String) -> Unit) {
             style = MaterialTheme.typography.bodyMedium
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
+//        Spacer(modifier = Modifier.height(16.dp))
 
 
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(gradientBrush, shape = RoundedCornerShape(8.dp))
-                .clip(RoundedCornerShape(8.dp))
-                .clickable {
-                    friends = friends.map { it.copy(plantLevel = it.plantLevel + 1) }
-                }
-                .padding(vertical = 12.dp),
-            contentAlignment = Alignment.Center
-        ) {
-            Text("Message Friends", color = Color.White)
-        }
+//        Box(
+//            modifier = Modifier
+//                .fillMaxWidth()
+//                .background(gradientBrush, shape = RoundedCornerShape(8.dp))
+//                .clip(RoundedCornerShape(8.dp))
+//                .clickable {
+//                    friends = friends.map { it.copy(plantLevel = Math.min(it.plantLevel + 1, 3)) }
+//                }
+//                .padding(vertical = 12.dp),
+//            contentAlignment = Alignment.Center
+//        ) {
+//            Text("Message Friends", color = Color.White)
+//        }
 
         Spacer(modifier = Modifier.height(16.dp))
         Divider()
@@ -114,7 +114,7 @@ fun GardenScreen(onFriendClick: (String) -> Unit) {
                     .clip(RoundedCornerShape(8.dp))
                     .clickable {
                         if (newFriendName.isNotBlank()) {
-                            friends = friends + Friend(name = newFriendName.trim(), plantLevel = 0)
+                            friends = friends + Friend(name = newFriendName.trim(), plantLevel = 1)
                             newFriendName = ""
                         }
                     }
@@ -160,7 +160,7 @@ fun GardenScreen(onFriendClick: (String) -> Unit) {
         ) {
             items(friends, key = { it.id }) { friend ->
                 FriendCard(friend, onClick = {
-                    onFriendClick(friend.name)
+                    onFriendClick(friend)
                 })
             }
         }
@@ -183,7 +183,7 @@ fun FriendCard(friend: Friend, onClick: () -> Unit) {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(friend.name)
-            AnimatedFlower()
+            AnimatedFlower(growthLevel = friend.plantLevel)
             Text("Plant level: ${friend.plantLevel}")
         }
     }
