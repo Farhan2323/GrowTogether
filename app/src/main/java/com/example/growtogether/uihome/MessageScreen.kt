@@ -9,7 +9,16 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CornerSize
@@ -19,7 +28,12 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -32,7 +46,7 @@ import androidx.compose.ui.unit.dp
 import com.example.growtogether.R
 
 @Composable
-fun messageScreen(friendName: String, messages: List<String>, onSendMessage: (String) -> Unit, onBack: () -> Unit) {
+fun messageScreen(friendName: String, growthLevel: Int = 10, messages: List<String>, onSendMessage: (String) -> Unit, onBack: () -> Unit) {
 
     val appBarColor = Color(0xFFEECDA3)
     var messageText by remember { mutableStateOf("") }
@@ -91,7 +105,7 @@ fun messageScreen(friendName: String, messages: List<String>, onSendMessage: (St
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             AnimatedFlower(direction = "left")
-            AnimatedFlower(direction = "right")
+            AnimatedFlower(direction = "right", growthLevel = growthLevel)
         }
 
 
@@ -161,7 +175,7 @@ fun messageScreen(friendName: String, messages: List<String>, onSendMessage: (St
 }
 
 @Composable
-fun AnimatedFlower(direction: String = "left") {
+fun AnimatedFlower(direction: String = "left", growthLevel: Int = 10) {
     var stretched by remember { mutableStateOf(false) }
 
     val scaleX by animateFloatAsState(
@@ -189,8 +203,17 @@ fun AnimatedFlower(direction: String = "left") {
 
     val flipX = if (direction == "right") -1f else 1f
 
+    val plantIds = arrayOf(
+        R.drawable.plant_baby_sad,
+        R.drawable.plant_baby,
+        R.drawable.plant_mid,
+        R.drawable.plant_mid
+    )
+
+    val plantId = if (growthLevel == 10) R.drawable.plantnew else plantIds[growthLevel]
+
     Image(
-        painter = painterResource(id = R.drawable.plantnew),
+        painter = painterResource(id = plantId),
         contentDescription = null,
         modifier = Modifier
             .padding(10.dp)

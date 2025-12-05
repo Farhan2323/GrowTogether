@@ -73,6 +73,7 @@ fun GrowTogetherApp() {
                 val friendMessages = conversations[friendName] ?: emptyList()
                 messageScreen(
                     friendName = friendName,
+                    growthLevel = progressViewModel.completedCountToday(),
                     messages = friendMessages,
                     onSendMessage = { text: String ->
                         val current = conversations[friendName] ?: emptyList()
