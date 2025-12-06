@@ -73,7 +73,7 @@ fun GardenScreen(onFriendClick: (Friend) -> Unit) {
 
         val gridState = rememberLazyGridState()
 
-        Box(modifier = Modifier.fillMaxSize()) {
+        Box(modifier = Modifier.fillMaxSize().background(Color(0xFFF3F4F6))) {
 
             Image(
                 painter = painterResource(id = R.drawable.bg),
